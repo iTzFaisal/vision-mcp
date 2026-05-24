@@ -4,4 +4,3 @@ __pycache__/
 uv.lock
 *.pyc
 .mcp.json
-IMPROVEMENT_PLAN.md

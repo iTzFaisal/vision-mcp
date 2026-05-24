@@ -27,8 +27,8 @@
 ## 6. Testing & Verification
 
 - [x] 6.1 Manual test: run server via `uv run server` and verify stdio JSON-RPC handshake
-- [ ] 6.2 Manual test: register with Claude Code via `claude mcp add` and test `analyze_image` with a real screenshot
-- [ ] 6.3 Manual test: test `compare_images` with two screenshots
+- [x] 6.2 Manual test: register with Claude Code via `claude mcp add` and test `analyze_image` with a real screenshot
+- [x] 6.3 Manual test: test `compare_images` with two screenshots
 - [x] 6.4 Manual test: verify error handling for missing files, unsupported formats, and missing API key
 
 ## 7. Documentation
