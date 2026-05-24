@@ -1,5 +1,5 @@
 [project]
-name = "vision-mcp"
+name = "vision-mcp-server"
 version = "0.1.0"
 description = "MCP server that provides vision analysis tools via OpenAI-compatible API"
 readme = "README.md"
@@ -22,7 +22,7 @@ classifiers = [
 Repository = "https://github.com/iTzFaisal/vision-mcp"
 
 [project.scripts]
-vision-mcp = "vision_mcp.server:main"
+vision-mcp-server = "vision_mcp.server:main"
 
 [build-system]
 requires = ["hatchling"]

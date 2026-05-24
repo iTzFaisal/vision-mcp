@@ -13,14 +13,14 @@ MCP server that provides vision analysis tools via an OpenAI-compatible API. Ena
 The recommended way to run the server is via `uvx` — no manual installation needed:
 
 ```bash
-uvx vision-mcp
+uvx vision-mcp-server
 ```
 
 Or install globally with uv:
 
 ```bash
-uv tool install vision-mcp
-vision-mcp
+uv tool install vision-mcp-server
+vision-mcp-server
 ```
 
 ### Environment Variables
@@ -64,7 +64,7 @@ Add to your project's `.mcp.json`:
   "mcpServers": {
     "vision": {
       "command": "uvx",
-      "args": ["vision-mcp"],
+      "args": ["vision-mcp-server"],
       "env": {
         "VISION_API_BASE": "https://api.openai.com/v1",
         "VISION_API_KEY": "${VISION_API_KEY}",
