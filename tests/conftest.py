@@ -3,9 +3,19 @@ from unittest.mock import AsyncMock, patch, MagicMock
 
 
 @pytest.fixture
-def mcp_instance():
-    from vision_mcp.server import mcp
-    return mcp
+def tools():
+    from vision_mcp.server import TOOLS
+    return TOOLS
+
+
+@pytest.fixture
+def analyze_tool(tools):
+    return next(t for t in tools if t.name == "vision_analyze_image")
+
+
+@pytest.fixture
+def compare_tool(tools):
+    return next(t for t in tools if t.name == "vision_compare_images")
 
 
 @pytest.fixture

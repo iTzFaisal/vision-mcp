@@ -1,6 +1,6 @@
 import pytest
 from vision_mcp.models import AnalyzeImageInput, CompareImagesInput
-from vision_mcp.server import analyze_image, compare_images
+from vision_mcp.server import _analyze_image, _compare_images
 
 
 @pytest.mark.asyncio
@@ -10,7 +10,7 @@ class TestAnalyzeImageExecution:
             image_path="/path/to/image.png",
             prompt="Describe this",
         )
-        result = await analyze_image(params)
+        result = await _analyze_image(params)
         assert result == "Mock vision API response"
         mock_encode_image.assert_called_once_with("/path/to/image.png")
         mock_call_vision_api.assert_called_once()
@@ -20,8 +20,8 @@ class TestAnalyzeImageExecution:
             image_path="/nonexistent.png",
             prompt="Describe this",
         )
-        result = await analyze_image(params)
-        assert "Mock file not found" in result
+        with pytest.raises(FileNotFoundError, match="Mock file not found"):
+            await _analyze_image(params)
         mock_encode_image_error.assert_called_once()
         mock_call_vision_api.assert_not_called()
 
@@ -30,8 +30,9 @@ class TestAnalyzeImageExecution:
             image_path="/path/to/image.png",
             prompt="Describe this",
         )
-        result = await analyze_image(params)
-        assert result == "Error: Mock API error"
+        from vision_mcp.client import VisionAPIError
+        with pytest.raises(VisionAPIError, match="Mock API error"):
+            await _analyze_image(params)
         mock_encode_image.assert_called_once()
         mock_call_vision_api_error.assert_called_once()
 
@@ -40,7 +41,7 @@ class TestAnalyzeImageExecution:
             image_path="/path/to/image.png",
             prompt="Custom prompt",
         )
-        result = await analyze_image(params)
+        result = await _analyze_image(params)
         assert result == "Mock vision API response"
         call_args = mock_call_vision_api.call_args[0]
         content_blocks = call_args[0]
@@ -48,7 +49,7 @@ class TestAnalyzeImageExecution:
 
     async def test_default_prompt(self, mock_encode_image, mock_call_vision_api):
         params = AnalyzeImageInput(image_path="/path/to/image.png")
-        result = await analyze_image(params)
+        result = await _analyze_image(params)
         assert result == "Mock vision API response"
         call_args = mock_call_vision_api.call_args[0]
         content_blocks = call_args[0]
@@ -59,7 +60,7 @@ class TestAnalyzeImageExecution:
             image_path="/path/to/image.png",
             prompt="Describe this",
         )
-        await analyze_image(params)
+        await _analyze_image(params)
         call_args = mock_call_vision_api.call_args[0]
         content_blocks = call_args[0]
         assert content_blocks[0]["type"] == "image_url"
@@ -74,7 +75,7 @@ class TestCompareImagesExecution:
             image_paths=["/path/a.png", "/path/b.png"],
             prompt="Compare these",
         )
-        result = await compare_images(params)
+        result = await _compare_images(params)
         assert result == "Mock vision API response"
         assert mock_encode_image.call_count == 2
         mock_call_vision_api.assert_called_once()
@@ -84,8 +85,8 @@ class TestCompareImagesExecution:
             image_paths=["/path/a.png", "/path/b.png"],
             prompt="Compare these",
         )
-        result = await compare_images(params)
-        assert "Mock file not found" in result
+        with pytest.raises(FileNotFoundError, match="Mock file not found"):
+            await _compare_images(params)
         mock_encode_image_error.assert_called_once()
         mock_call_vision_api.assert_not_called()
 
@@ -94,14 +95,15 @@ class TestCompareImagesExecution:
             image_paths=["/path/a.png", "/path/b.png"],
             prompt="Compare these",
         )
-        result = await compare_images(params)
-        assert result == "Error: Mock API error"
+        from vision_mcp.client import VisionAPIError
+        with pytest.raises(VisionAPIError, match="Mock API error"):
+            await _compare_images(params)
         mock_call_vision_api_error.assert_called_once()
 
     async def test_multiple_images_encoded(self, mock_encode_image, mock_call_vision_api):
         paths = ["/path/a.png", "/path/b.png", "/path/c.png"]
         params = CompareImagesInput(image_paths=paths, prompt="Compare")
-        await compare_images(params)
+        await _compare_images(params)
         assert mock_encode_image.call_count == 3
         assert mock_encode_image.call_args_list[0][0] == ("/path/a.png",)
         assert mock_encode_image.call_args_list[1][0] == ("/path/b.png",)
@@ -112,7 +114,7 @@ class TestCompareImagesExecution:
             image_paths=["/path/a.png", "/path/b.png"],
             prompt="Compare",
         )
-        await compare_images(params)
+        await _compare_images(params)
         call_args = mock_call_vision_api.call_args[0]
         content_blocks = call_args[0]
         texts = [b["text"] for b in content_blocks if b["type"] == "text"]
@@ -125,7 +127,7 @@ class TestCompareImagesExecution:
             image_paths=["/path/a.png", "/path/b.png"],
             prompt="Compare",
         )
-        await compare_images(params)
+        await _compare_images(params)
         call_args = mock_call_vision_api.call_args[0]
         content_blocks = call_args[0]
         assert content_blocks[0]["type"] == "image_url"
